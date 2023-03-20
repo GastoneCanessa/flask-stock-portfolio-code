@@ -1,8 +1,11 @@
-from flask import Flask, escape, render_template, request
+from flask import Flask, render_template, request, session
 from pydantic import BaseModel, validator, ValidationError
+from flask import redirect, url_for
 
 app = Flask(__name__)
- 
+
+app.secret_key = 'b\x12\xd2D\xdb\xe9\xd9\x01\xe2,\xfd\xb5\xd6\xa7~\x06\xc7\xe6\xe9\xc1d\xff_\x8e\xa2\x81F\x07\xdc=>\x03\n' 
+
 
 class StockModel(BaseModel):
     """Class for parsing new stock data a form."""
@@ -38,10 +41,21 @@ def add_stock():
             stock_data = StockModel(
                 stock_symbol=request.form['stock_symbol'],
                 number_of_shares=request.form['number_of_shares'],
-                purchase_price=request.form['purchae_price']
+                purchase_price=request.form['purchase_price']
             )
             print(stock_data)
+
+            # Save the form data to the session object
+            session['stock_symbol'] = stock_data.stock_symbol
+            session['number_of_shares'] = stock_data.number_of_shares
+            session['purchase_price'] = stock_data.purchase_price
+            return redirect(url_for('list_stocks'))
         except ValidationError as e:
             print(e)
 
     return render_template('add_stock.html')     
+
+
+@app.route('/stocks/')
+def list_stocks():
+    return render_template('stocks.html')
