@@ -15,7 +15,7 @@ app.config.from_object(config_type)
 app.logger.removeHandler(default_handler)  # serve per non stampare in console i logger
 
 # Logging Configuration
-file_handler = RotatingFileHandler('flask-stock-portfolio.log',
+file_handler = RotatingFileHandler('instance/flask-stock-portfolio.log',
                                    maxBytes=16384,
                                    backupCount=20)  # server per creare un altro file di logger quando le dimensioni diventano troppo grandi
 file_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(filename)s:%(lineno)d]')  
