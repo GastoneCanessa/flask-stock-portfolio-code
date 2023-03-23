@@ -27,7 +27,7 @@ def test_about_page():
     """   
          
     with app.test_client() as client:
-        response = client.get('/about')
+        response = client.get('/users/about')
         assert response.status_code == 200
         assert b'Flask Stock Portfolio App' in response.data
         assert b'About' in response.data

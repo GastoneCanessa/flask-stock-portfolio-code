@@ -4,12 +4,15 @@ from flask import redirect, url_for, flash
 import logging
 from flask.logging import default_handler
 from logging.handlers import RotatingFileHandler
+import os
 
 app = Flask(__name__) 
 
-app.logger.removeHandler(default_handler)  # serve per non stampare in console i logger
+# Configure the Flask application
+config_type = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
+app.config.from_object(config_type)
 
-app.secret_key = 'b\x12\xd2D\xdb\xe9\xd9\x01\xe2,\xfd\xb5\xd6\xa7~\x06\xc7\xe6\xe9\xc1d\xff_\x8e\xa2\x81F\x07\xdc=>\x03\n' 
+app.logger.removeHandler(default_handler)  # serve per non stampare in console i logger
 
 # Logging Configuration
 file_handler = RotatingFileHandler('flask-stock-portfolio.log',
