@@ -9,15 +9,9 @@ def test_client():
     flask_app.config.from_object('config.TestingConfig')
 
     # Create a test client using the Flask application configured for testing
-    testing_client = flask_app.test_client()
+    with flask_app.test_client() as testing_client:
+        # Establish an application context before accessing the logger
+        with flask_app.app_context():
+            current_app.logger.info('In the test_client() fixture...')
 
-    # Establish an application context
-    ctx = flask_app.app_context()
-    ctx.push()
-
-    current_app.logger.info('In the test_client() fixture...') 
-
-    # Pop the application context from the stack
-    ctx.pop()
-
-    yield testing_client  # this is where the testing happens!
+        yield testing_client  # this is where the testing happens!
