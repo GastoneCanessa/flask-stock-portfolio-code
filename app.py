@@ -5,7 +5,7 @@ import logging
 from flask.logging import default_handler
 from logging.handlers import RotatingFileHandler
 
-app = Flask(__name__)
+app = Flask(__name__) #we
 
 app.logger.removeHandler(default_handler)  # serve per non stampare in console i logger
 
