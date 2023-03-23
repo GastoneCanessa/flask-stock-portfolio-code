@@ -2,7 +2,6 @@ from . import stocks_blueprint
 from flask import current_app, render_template, request, session, flash, redirect, url_for
 from pydantic import BaseModel, validator, ValidationError
 
-
 class StockModel(BaseModel):
     """Class for parsing new stock data from a form."""
     stock_symbol: str
@@ -14,6 +13,22 @@ class StockModel(BaseModel):
         if not value.isalpha() or len(value) > 5:
             raise ValueError('Stock symbol must be 1-5 characters')
         return value.upper()
+
+
+@stocks_blueprint.before_request
+def stocks_before_request():
+    current_app.logger.info('Calling before_request() for the stocks blueprint...')
+
+
+@stocks_blueprint.after_request
+def stocks_after_request(response):
+    current_app.logger.info('Calling after_request() for the stocks blueprint...')
+    return response
+
+
+@stocks_blueprint.teardown_request
+def stocks_teardown_request(error=None):
+    current_app.logger.info('Calling teardown_request() for the stocks blueprint...')        
 
 
 @stocks_blueprint.route('/')
