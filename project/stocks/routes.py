@@ -1,6 +1,9 @@
 from . import stocks_blueprint
 from flask import current_app, render_template, request, session, flash, redirect, url_for
 from pydantic import BaseModel, validator, ValidationError
+from project.models import Stock
+from project import database
+
 
 class StockModel(BaseModel):
     """Class for parsing new stock data from a form."""
@@ -48,15 +51,16 @@ def add_stock():
             )
             print(stock_data)
 
-            # Save the form data to the session object
-            session['stock_symbol'] = stock_data.stock_symbol
-            session['number_of_shares'] = stock_data.number_of_shares
-            session['purchase_price'] = stock_data.purchase_price
+            # Save the form data to the database
+            new_stock = Stock(stock_data.stock_symbol,
+                              stock_data.number_of_shares,
+                              stock_data.purchase_price)
+            database.session.add(new_stock)
+            database.session.commit()
 
             flash(f"Added new stock ({stock_data.stock_symbol})!", 'success')
             current_app.logger.info(f"Added new stock ({request.form['stock_symbol']})!")
-
-            return redirect(url_for('stocks.list_stocks'))  # PREVIOUS: url_for('list_stocks')
+            return redirect(url_for('stocks.list_stocks'))
         except ValidationError as e:
             print(e)
 
@@ -65,4 +69,5 @@ def add_stock():
 
 @stocks_blueprint.route('/stocks/')
 def list_stocks():
-    return render_template('stocks/stocks.html')
+    stocks = Stock.query.order_by(Stock.id).all()
+    return render_template('stocks/stocks.html', stocks=stocks)

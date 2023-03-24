@@ -3,6 +3,10 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask.logging import default_handler
 import os
+from flask_sqlalchemy import SQLAlchemy
+
+
+database = SQLAlchemy()
 
 
 # ----------------------------
@@ -17,6 +21,7 @@ def create_app():
     config_type = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
     app.config.from_object(config_type)
 
+    initialize_extensions(app)
     register_blueprints(app)
     configure_logging(app)
     register_app_callbacks(app)
@@ -33,6 +38,12 @@ def register_blueprints(app):
     # with the Flask application instance (app)
     app.register_blueprint(stocks_blueprint)
     app.register_blueprint(users_blueprint, url_prefix='/users')    
+
+
+def initialize_extensions(app):
+    # Since the application instance is now created, pass it to each Flask
+    # extension instance to bind it to the Flask application instance (app)
+    database.init_app(app)    
 
 
 def configure_logging(app):

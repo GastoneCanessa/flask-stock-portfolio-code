@@ -1,11 +1,18 @@
 import os
 
 
+# Determine the folder of the top-level directory of this project
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
+
 class Config(object):
     FLASK_ENV = 'development'
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv('SECRET_KEY', default='b\x12\xd2D\xdb\xe9\xd9\x01\xe2,\xfd\xb5\xd6\xa7~\x06\xc7\xe6\xe9\xc1d\xff_\x8e\xa2\x81F\x07\xdc=>\x03\n')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL',
+                                        default=f"sqlite:///{os.path.join(BASEDIR, 'instance', 'app.db')}")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProductionConfig(Config):
@@ -18,3 +25,8 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+
+
+
+
+
