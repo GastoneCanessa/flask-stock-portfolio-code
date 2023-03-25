@@ -35,3 +35,27 @@ def test_client():
 
         with flask_app.app_context():
             database.drop_all()
+
+
+@pytest.fixture(scope='module')
+def register_default_user(test_client):
+    # Register the default user
+    test_client.post('/users/register',
+                     data={'email': 'patrick@gmail.com',
+                           'password': 'FlaskIsAwesome123'},
+                     follow_redirects=True)
+    return
+
+
+@pytest.fixture(scope='function')
+def log_in_default_user(test_client, register_default_user):
+    # Log in the default user
+    test_client.post('/users/login',
+                     data={'email': 'patrick@gmail.com',
+                           'password': 'FlaskIsAwesome123'},
+                     follow_redirects=True)
+
+    yield   # this is where the testing happens!
+
+    # Log out the default user
+    test_client.get('/users/logout', follow_redirects=True)

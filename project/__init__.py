@@ -5,10 +5,15 @@ from flask.logging import default_handler
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
+from flask_login import LoginManager
 
 
 database = SQLAlchemy()
 db_migration = Migrate()
+csrf_protection = CSRFProtect()
+login = LoginManager() 
+login.login_view = "users.login"
 
 
 # ----------------------------
@@ -47,7 +52,15 @@ def initialize_extensions(app):
     # extension instance to bind it to the Flask application instance (app)
     database.init_app(app)    
     db_migration.init_app(app, database)
+    csrf_protection.init_app(app)
+    login.init_app(app)
 
+    from project.models import User
+
+    @login.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+        
 
 def configure_logging(app):
     # Logging Configuration
