@@ -210,6 +210,16 @@ def logout():
     return redirect(url_for('stocks.index'))
 
 
+@users_blueprint.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    return '<h1>Page Is Under Construction</h1>'
+
+
+@users_blueprint.route('/resend_email_confirmation')
+def resend_email_confirmation():
+    return '<h1>Page Is Under Construction</h1>'
+
+
 @users_blueprint.route('/profile')
 @login_required
 def user_profile():

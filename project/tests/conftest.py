@@ -92,3 +92,22 @@ def afterwards_reset_default_user_password():
     user.set_password('FlaskIsAwesome123')
     database.session.add(user)
     database.session.commit()    
+
+
+@pytest.fixture(scope='function')
+def confirm_email_default_user(test_client, log_in_default_user):
+    # Mark the user as having their email address confirmed
+    user = User.query.filter_by(email='patrick@gmail.com').first()
+    user.email_confirmed = True
+    user.email_confirmed_on = datetime(2020, 7, 8)
+    database.session.add(user)
+    database.session.commit()
+
+    yield user  # this is where the testing happens!
+
+    # Mark the user as not having their email address confirmed (clean up)
+    user = User.query.filter_by(email='patrick@gmail.com').first()
+    user.email_confirmed = False
+    user.email_confirmed_on = None
+    database.session.add(user)
+    database.session.commit()    
