@@ -4,6 +4,8 @@ from pydantic import BaseModel, validator, ValidationError
 from project.models import Stock
 from project import database
 import click
+from flask_login import login_required, current_user
+from datetime import datetime
 
 
 class StockModel(BaseModel):
@@ -42,6 +44,7 @@ def index():
 
 
 @stocks_blueprint.route('/add_stock', methods=['GET', 'POST'])
+@login_required
 def add_stock():
     if request.method == 'POST':
         try:
@@ -55,7 +58,9 @@ def add_stock():
             # Save the form data to the database
             new_stock = Stock(stock_data.stock_symbol,
                               stock_data.number_of_shares,
-                              stock_data.purchase_price)
+                              stock_data.purchase_price,
+                              current_user.id,    
+                              datetime.fromisoformat(request.form['purchase_date']))
             database.session.add(new_stock)
             database.session.commit()
 
@@ -69,8 +74,9 @@ def add_stock():
 
 
 @stocks_blueprint.route('/stocks/')
+@login_required
 def list_stocks():
-    stocks = Stock.query.order_by(Stock.id).all()
+    stocks = Stock.query.order_by(Stock.id).filter_by(user_id=current_user.id).all()
     return render_template('stocks/stocks.html', stocks=stocks)
 
 
